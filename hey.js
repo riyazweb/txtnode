@@ -10,18 +10,39 @@ app.get('/', (req, res) => {
   res.sendFile(__dirname + '/index.html');
 });
 
-app.post('/submit', (req, res) => {
+app.post('/submit', async (req, res) => {
+  const { Configuration, OpenAIApi } = require("openai");
+  
   const { input, filename } = req.body;
-
+  
   // Content to be sent in the response
-  const content = `${filename}:\n${input}`;
+  const apiKey = "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"; // Replace with your actual API key
+  
+  const configuration = new Configuration({
+    apiKey: apiKey,
+  });
+  const openai = new OpenAIApi(configuration);
+  
+  try {
+    const completion = await openai.createCompletion({
+      model: "text-davinci-003",
+      prompt: "summarize this in 20 words:  " + input ,
+      max_tokens: 500, 
+    }); 
+   ;
 
-  // Set the response headers to trigger a file download
-  res.setHeader('Content-Type', 'text/plain');
-  res.setHeader('Content-Disposition', `attachment; filename=${filename}.txt`);
+    const content = `${filename}:\n${input} \n summarized: ${completion.data.choices[0].text}`;
 
-  // Send the content as the response
-  res.send(content);
+    // Set the response headers to trigger a file download
+    res.setHeader('Content-Type', 'text/plain');
+    res.setHeader('Content-Disposition', `attachment; filename=${filename}.txt`);
+
+    // Send the content as the response
+    res.send(content);
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).send("An error occurred.");
+  }
 });
 
 app.listen(port, () => {
