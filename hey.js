@@ -16,7 +16,7 @@ app.post('/submit', async (req, res) => {
   const { input, filename } = req.body;
   
   // Content to be sent in the response
-  const apiKey = "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"; // Replace with your actual API key
+  const apiKey = "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"; // Replace with your actual API key
   
   const configuration = new Configuration({
     apiKey: apiKey,
