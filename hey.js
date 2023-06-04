@@ -1,16 +1,4 @@
-const express = require('express');
-const fs = require('fs');
-const app = express();
-const port = 3000;
-
-app.use(express.urlencoded({ extended: true }));
-app.use(express.static('public'));
-
-// Serve the HTML form
-app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/index.html');
-});
-
+@@ -14,18 +13,15 @@ app.get('/', (req, res) => {
 app.post('/submit', (req, res) => {
   const { input, filename } = req.body;
 
@@ -23,11 +11,18 @@ app.post('/submit', (req, res) => {
       console.log('File saved successfully');
       console.log('click here to return: http://localhost:3000/ ');
       res.send('File saved successfully click here to return:   <br> <a href="">http://localhost:3000</a>');
-  
+
     }
   });
+  // Content to be sent in the response
+  const content = `${filename}:\n${input}`;
+
+  // Set the response headers to trigger a file download
+  res.setHeader('Content-Type', 'text/plain');
+  res.setHeader('Content-Disposition', `attachment; filename=${filename}.txt`);
+
+  // Send the content as the response
+  res.send(content);
 });
 
 app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
-});
