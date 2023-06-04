@@ -1,0 +1,9 @@
+hey:
+Please save this secret key somewhere safe and accessible. For security reasons, you won't be able to view it again through your OpenAI account. If you lose this secret key, you'll need to generate a new one. 
+ summarized:  This secret may be a secure phrase or password that is easy for you to remember but difficult for anyone else to guess. It is important to keep your key safe and never give it to anyone.THIS KEYS WILL BE NEEDED IN RDPMAKER SOFTWARE TO DO UPDATE CARDS / SOFTWARE WITH SMARTER ALGORITHM TEMS.
+
+agelbert • 4 months ago
+
+New "Deep Learning" Smart Home Skill Kit 2017
+
+Google Research published a book titled 'Deep Learning' with MIT Press. Based on the TensorFlow deep learning framework called "Convolutional Neural Networks" (or ConvNet), the team made available a list of (164) Commonly used things - Commonly used things (please click the link, I cannot post urls here, sois added here instead): DescriptorExtractor.testDescriptors() from TensorFlow.DescriptorExtractor import train_test_split from sklearn.
