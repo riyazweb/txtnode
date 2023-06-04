@@ -1,5 +1,4 @@
 const express = require('express');
-const fs = require('fs');
 const app = express();
 const port = 3000;
 
@@ -11,21 +10,39 @@ app.get('/', (req, res) => {
   res.sendFile(__dirname + '/index.html');
 });
 
-app.post('/submit', (req, res) => {
-  const { input, filename } = req.body;
-
-  // Save input value to a text file with the specified filename
-  fs.writeFile(`${filename}.txt`, input, (err) => {
-    if (err) {
-      console.error(err);
-      res.status(500).send('Error saving file');
-    } else {
-      console.log('File saved successfully');
-      console.log('click here to return: http://localhost:3000/ ');
-      res.send('File saved successfully click here to return:   <br> <a href="">http://localhost:3000</a>');
+app.post('/submit', async (req, res) => {
+  const { Configuration, OpenAIApi } = require("openai");
   
-    }
+  const { input, filename } = req.body;
+  
+  // Content to be sent in the response
+  const apiKey = "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"; // Replace with your actual API key
+  
+  const configuration = new Configuration({
+    apiKey: apiKey,
   });
+  const openai = new OpenAIApi(configuration);
+  
+  try {
+    const completion = await openai.createCompletion({
+      model: "text-davinci-003",
+      prompt: "summarize this in 20 words:  " + input ,
+      max_tokens: 500, 
+    }); 
+   ;
+
+    const content = `${filename}:\n${input} \n summarized: ${completion.data.choices[0].text}`;
+
+    // Set the response headers to trigger a file download
+    res.setHeader('Content-Type', 'text/plain');
+    res.setHeader('Content-Disposition', `attachment; filename=${filename}.txt`);
+
+    // Send the content as the response
+    res.send(content);
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).send("An error occurred.");
+  }
 });
 
 app.listen(port, () => {
