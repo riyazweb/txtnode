@@ -26,7 +26,7 @@ app.post('/submit', async (req, res) => {
   try {
     const completion = await openai.createCompletion({
       model: "text-davinci-003",
-      prompt: "summarize this in only 20 words:  " + input ,
+      prompt: "summarize this in 20 words:  " + input ,
       max_tokens: 500, 
     }); 
    ;
