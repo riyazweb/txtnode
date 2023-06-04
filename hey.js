@@ -1,4 +1,4 @@
-@@ -14,18 +13,15 @@ app.get('/', (req, res) => {
+app.get('/', (req, res) => {
 app.post('/submit', (req, res) => {
   const { input, filename } = req.body;
 
