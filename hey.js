@@ -1,33 +1,61 @@
-const express = require('express');
+const PDFDocument = require('pdfkit');
 const fs = require('fs');
-const app = express();
-const port = 3000;
+const express = require('express');
 
-app.use(express.urlencoded({ extended: true }));
+const app = express();
+
+// Serve static files from the "public" directory
 app.use(express.static('public'));
 
-// Serve the HTML form
-app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/index.html');
+// Parse URL-encoded bodies (as sent by HTML forms)
+app.use(express.urlencoded({ extended: true }));
+
+// Parse JSON bodies (as sent by API clients)
+app.use(express.json());
+
+// Define a route for the home page
+app.get('/', (_, res) => {
+    res.sendFile(__dirname + '/public/textn.html');
 });
 
+// Define a route for handling form submission
 app.post('/submit', (req, res) => {
-  const { input, filename } = req.body;
+    const text = req.body.text.replace(/Ð/g, '').replace(/\r\n|\r/g, '\n');
 
-  // Save input value to a text file with the specified filename
-  fs.writeFile(`${filename}.txt`, input, (err) => {
-    if (err) {
-      console.error(err);
-      res.status(500).send('Error saving file');
-    } else {
-      console.log('File saved successfully');
-      console.log('click here to return: http://localhost:3000/ ');
-      res.send('File saved successfully click here to return:   <br> <a href="">http://localhost:3000</a>');
-  
-    }
-  });
+    // Create a new PDF document
+    const doc = new PDFDocument();
+
+    // Pipe the PDF document to a writable stream
+    const stream = fs.createWriteStream('output.pdf');
+    doc.pipe(stream);
+
+    // Add the text to the PDF document
+    doc.text(text, { encoding: 'utf8' }); // Specify the encoding as 'utf8'
+
+    // Finalize the PDF document
+    doc.end();
+
+    // Handle the completion of the PDF generation
+    stream.on('finish', () => {
+        console.log('PDF created successfully.');
+        res.download('output.pdf', 'output.pdf', (err) => {
+            if (err) {
+                console.error('Error downloading PDF:', err);
+                res.status(500).send('Error downloading PDF.');
+            } else {
+                console.log('PDF downloaded successfully.');
+            }
+        });
+    });
+
+    // Handle any errors that occur during the PDF generation
+    stream.on('error', (err) => {
+        console.error('Error creating PDF:', err);
+        res.status(500).send('Error creating PDF.');
+    });
 });
 
-app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
+// Start the server
+app.listen(3000, () => {
+    console.log('Server started on port 3000');
 });
